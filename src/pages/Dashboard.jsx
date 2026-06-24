@@ -7,6 +7,7 @@ import { getRelativeTimeText, getRelativeTimeColor, formatDate } from '../utils/
 import { isPast, differenceInDays } from 'date-fns';
 import { Link } from 'react-router-dom';
 import MiniCalendar from '../components/ui/MiniCalendar';
+import { motion } from 'framer-motion';
 
 function ExamCountdown({ exam }) {
   const timeLeft = useCountdown(exam?.date);
@@ -80,49 +81,97 @@ export default function Dashboard() {
     { icon: Clock, title: 'Nearest Deadline', value: nearestDeadlineLabel, subtitle: nearestDeadlineTitle, colorClass: 'bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400' }
   ];
 
+  const containerVariant = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariant = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="space-y-6">
+    <motion.div variants={containerVariant} initial="hidden" animate="visible" className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {stats.map((stat, i) => <StatCard key={i} {...stat} />)}
+        {stats.map((stat, i) => (
+          <motion.div key={i} variants={itemVariant}>
+            <StatCard {...stat} />
+          </motion.div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Nearest Assignment Deadline */}
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-[var(--text-primary)] flex items-center gap-2">
-              <Clock size={18} className="text-gray-400" />
-              Nearest Assignment Deadline
-            </h3>
-            <Link to="/assignments" className="text-xs text-indigo-500 hover:underline">View all</Link>
-          </div>
-          
-          {nearestAssignment ? (
-            <div className="flex-1">
-              <h4 className="text-xl font-bold text-[var(--text-primary)]">{nearestAssignment.title}</h4>
-              <p className="text-sm text-indigo-500 mt-1 mb-4 flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                {courses.find(c => c.id === nearestAssignment.courseId)?.name || 'Unknown Course'}
-              </p>
-              
-              <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <p className="flex items-center gap-2">
-                  <CalendarIcon size={16} />
-                  Due: {formatDate(nearestAssignment.dueDate)}
-                </p>
-                <p className={`flex items-center gap-2 ${getRelativeTimeColor(nearestAssignment.dueDate)}`}>
-                  <Clock size={16} />
-                  {getRelativeTimeText(nearestAssignment.dueDate)}
-                </p>
+        <motion.div variants={itemVariant} className="lg:col-span-2 space-y-6">
+          <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">Quick Overview</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {courses.slice(0, 4).map(course => {
+                const courseAssignments = assignments.filter(a => a.courseId === course.id);
+                const completed = courseAssignments.filter(a => a.status === 'Completed').length;
+                const progress = courseAssignments.length > 0 ? (completed / courseAssignments.length) * 100 : 0;
+                
+                return (
+                  <Link key={course.id} to="/courses" className="block p-4 border border-[var(--border-color)] rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <h4 className="font-semibold text-[var(--text-primary)] mb-1">{course.name}</h4>
+                    <p className="text-xs text-gray-500 mb-3">{completed} of {courseAssignments.length} tasks done</p>
+                    <ProgressBar progress={progress} color={course.color} />
+                  </Link>
+                );
+              })}
+            </div>
+            {courses.length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                <p>No courses added yet.</p>
+                <Link to="/courses" className="text-indigo-500 hover:underline text-sm mt-2 inline-block">Add your first course</Link>
               </div>
+            )}
+          </div>
+        </motion.div>
+
+        <motion.div variants={itemVariant} className="space-y-6">
+          {/* Nearest Deadline Card */}
+          <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm flex flex-col h-full">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">Nearest Assignment</h3>
+              <Link to="/assignments" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">View all</Link>
             </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
-              No pending assignments.
-            </div>
-          )}
-        </div>
+            
+            {nearestAssignment ? (
+              <div className="flex-1">
+                <h4 className="text-xl font-bold text-[var(--text-primary)]">{nearestAssignment.title}</h4>
+                <p className="text-sm text-indigo-500 mt-1 mb-4 flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                  {courses.find(c => c.id === nearestAssignment.courseId)?.name || 'Unknown Course'}
+                </p>
+                
+                <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                  <p className="flex items-center gap-2">
+                    <CalendarDays size={16} />
+                    Due: {formatDate(nearestAssignment.dueDate)}
+                  </p>
+                  <p className={`flex items-center gap-2 ${getRelativeTimeColor(nearestAssignment.dueDate)}`}>
+                    <Clock size={16} />
+                    {getRelativeTimeText(nearestAssignment.dueDate)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+                No pending assignments.
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Nearest Exam */}
         <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
@@ -228,6 +277,6 @@ export default function Dashboard() {
         </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 }
