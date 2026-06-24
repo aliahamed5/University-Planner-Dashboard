@@ -5,6 +5,8 @@ import Courses from './pages/Courses'
 import Assignments from './pages/Assignments'
 import Exams from './pages/Exams'
 import Notes from './pages/Notes'
+import Settings from './pages/Settings'
+import CalendarView from './pages/CalendarView'
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="assignments" element={<Assignments />} />
           <Route path="exams" element={<Exams />} />
           <Route path="notes" element={<Notes />} />
+          <Route path="calendar" element={<CalendarView />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

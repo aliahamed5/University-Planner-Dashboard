@@ -11,8 +11,8 @@ export default function Sidebar() {
     { to: '/assignments', icon: CheckSquare, label: 'Assignments' },
     { to: '/exams', icon: CalendarDays, label: 'Exams' },
     { to: '/notes', icon: StickyNote, label: 'Notes' },
-    { to: '#calendar', icon: Calendar, label: 'Calendar' },
-    { to: '#settings', icon: Settings, label: 'Settings' },
+    { to: '/calendar', icon: Calendar, label: 'Calendar' },
+    { to: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (
