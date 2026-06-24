@@ -4,6 +4,7 @@ import { formatDate, getRelativeTimeText } from '../../utils/dateHelpers';
 import { usePlanner } from '../../context/PlannerContext';
 import { useNavigate } from 'react-router-dom';
 import { isPast, differenceInDays } from 'date-fns';
+import PomodoroWidget from '../ui/PomodoroWidget';
 
 export default function Navbar() {
   const today = new Date();
@@ -67,7 +68,11 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-8">
+      <div className="flex items-center gap-4 md:gap-6">
+        {/* Pomodoro Timer */}
+        <div className="hidden md:block">
+          <PomodoroWidget />
+        </div>
         {/* Global Search */}
         <div className="relative hidden lg:block" ref={searchRef}>
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
