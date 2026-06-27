@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { usePlanner } from '../context/PlannerContext';
-import { Plus, Trash2, Edit2, Clock, Search, Filter } from 'lucide-react';
+import { Plus, Trash2, Edit2, Clock, Search, Filter, Check } from 'lucide-react';
 import Modal from '../components/ui/Modal';
 import { formatDate, getRelativeTimeText, getRelativeTimeColor } from '../utils/dateHelpers';
 
@@ -112,29 +112,37 @@ export default function Assignments() {
           return (
             <div key={assignment.id} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group">
               <div className="flex-1 flex gap-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-sm" style={{ backgroundColor: course?.color || '#ccc' }}>
-                  <span className="font-bold text-lg">{course?.name.charAt(0)}</span>
+                <div className="flex-shrink-0 flex items-start pt-1">
+                  <button 
+                    onClick={() => updateAssignmentStatus(assignment.id, assignment.status === 'Completed' ? 'Pending' : 'Completed')}
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${assignment.status === 'Completed' ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 dark:border-gray-600 text-transparent hover:border-green-500'}`}
+                  >
+                    <Check size={14} strokeWidth={3} />
+                  </button>
+                </div>
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-sm" style={{ backgroundColor: course?.color || '#ccc' }}>
+                  <span className="font-bold text-base md:text-lg">{course?.name.charAt(0)}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h4 className="text-lg font-bold text-[var(--text-primary)] truncate">{assignment.title}</h4>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(assignment.status)}`}>
+                    <h4 className={`text-base md:text-lg font-bold text-[var(--text-primary)] truncate transition-all ${assignment.status === 'Completed' ? 'line-through opacity-50' : ''}`}>{assignment.title}</h4>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] md:text-xs font-semibold whitespace-nowrap ${getStatusColor(assignment.status)}`}>
                       {assignment.status}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 truncate">{course?.name}</p>
-                  <p className="text-sm text-[var(--text-secondary)] line-clamp-2">{assignment.description}</p>
+                  <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-2 truncate">{course?.name}</p>
+                  <p className={`text-sm text-[var(--text-secondary)] line-clamp-2 ${assignment.status === 'Completed' ? 'opacity-50' : ''}`}>{assignment.description}</p>
                   
                   <div className="flex items-center gap-4 mt-3">
-                    <div className={`flex items-center gap-1.5 text-sm font-medium ${getRelativeTimeColor(assignment.dueDate)}`}>
-                      <Clock size={16} />
-                      {getRelativeTimeText(assignment.dueDate)} ({formatDate(assignment.dueDate, 'MMM d, h:mm a')})
+                    <div className={`flex items-center gap-1.5 text-xs md:text-sm font-medium ${getRelativeTimeColor(assignment.dueDate)}`}>
+                      <Clock size={14} className="md:w-4 md:h-4" />
+                      {getRelativeTimeText(assignment.dueDate)} <span className="hidden md:inline">({formatDate(assignment.dueDate, 'MMM d, h:mm a')})</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity border-t md:border-t-0 pt-4 md:pt-0 mt-4 md:mt-0">
+              <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity border-t md:border-t-0 pt-4 md:pt-0 mt-4 md:mt-0 justify-end">
                 <select
                   value={assignment.status}
                   onChange={(e) => updateAssignmentStatus(assignment.id, e.target.value)}

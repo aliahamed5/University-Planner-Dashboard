@@ -89,7 +89,7 @@ export default function Navbar() {
           />
           
           {isSearchOpen && searchQuery.trim().length > 0 && (
-            <div className="absolute top-full mt-2 left-0 w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2">
+            <div className="absolute top-full mt-2 left-0 w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
               {searchResults.length > 0 ? (
                 <div className="py-2">
                   {searchResults.map(res => (
@@ -125,10 +125,10 @@ export default function Navbar() {
           </button>
 
           {isNotifOpen && (
-            <div className="absolute top-full right-0 mt-2 w-80 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
+            <div className="absolute top-full right-0 mt-2 w-80 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
               <div className="p-4 border-b border-[var(--border-color)] flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
                 <h3 className="font-semibold text-[var(--text-primary)] text-sm">Notifications</h3>
-                <span className="text-xs text-indigo-500 cursor-pointer hover:underline">Mark all as read</span>
+                <span className="text-xs text-indigo-500 cursor-pointer hover:underline" onClick={() => setIsNotifOpen(false)}>Mark all as read</span>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notifications.map((n, i) => (

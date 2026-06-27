@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import AnimatedBackground from '../ui/AnimatedBackground';
+import AIStudyTips from '../ui/AIStudyTips';
 import { Toaster } from 'react-hot-toast';
 
 export default function Layout() {
@@ -18,6 +19,7 @@ export default function Layout() {
           </div>
         </main>
       </div>
+      <AIStudyTips />
     </div>
   );
 }
